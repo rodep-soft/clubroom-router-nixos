@@ -196,6 +196,7 @@
     unzip
     python3
     tmux
+    gnumake
     zlib
     ffmpeg
     v4l-utils
