@@ -74,9 +74,11 @@
   # ==========================================
   services.filebrowser = {
     enable = true;
-    listenAddress = "0.0.0.0";
-    port = 8080;
-    root = "/data";
+    settings = {
+      address = "0.0.0.0";
+      port = 8080;
+      root = "/data";
+    };
   };
   # ==========================================
 
