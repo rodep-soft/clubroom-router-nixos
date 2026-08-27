@@ -1,6 +1,6 @@
 # Dotfiles
 
-部室でルータ用に置いているnixosのdotfiles管理用repo.
+部室でルータ用に置いているnixosの設定ファイル管理用repo.
 
 `/etc/nixos/*`と一致しています.
 
