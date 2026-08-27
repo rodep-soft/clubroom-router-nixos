@@ -8,6 +8,12 @@
 
 [wifi_as_wan](https://github.com/lazytatzv/wifi_as_wan_with_nixos)
 
+## ネットワーク設定
+
+`iwd`と`systemd-networkd`を使用しています. `/var/lib/iwd`以下に設定ファイルを記述することで使用可能になります.
+
+大学のwifiに接続する時は、[iwd](https://wiki.archlinux.org/title/Iwd)の`3.2.2`を参考にするか、[wifi_as_wan](https://github.com/lazytatzv/wifi_as_wan_with_nixos)の設定ファイルを参考にすると良いでしょう.
+
 ## NAS設定
 
 `nfs`サーバを建てているのでLinuxユーザは簡単に利用することができます.
