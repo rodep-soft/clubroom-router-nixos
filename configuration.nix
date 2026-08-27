@@ -89,7 +89,7 @@
 
   virtualisation.docker = {
     enable = true;
-    package = pkgs.docker;
+    package = pkgs.docker_29;
   };
 
 
@@ -198,7 +198,7 @@
     zlib
     ffmpeg
     v4l-utils
-    docker
+    docker_29
     #docker-compose
     
   ];
