@@ -4,6 +4,35 @@
 
 `/etc/nixos/*`と一致しています.
 
-今エアコンの上に置いてあるpcです.
+ルータ設定は以下を流用しています.
 
 [wifi_as_wan](https://github.com/lazytatzv/wifi_as_wan_with_nixos)
+
+## NAS設定
+
+`nfs`サーバを建てているのでLinuxユーザは簡単に利用することができます.
+
+```bash
+# nfs clientのインストール
+
+## arch
+sudo pacman -S nfs-utils
+
+## debian
+sudo apt install nfs-common
+
+# Load module
+sudo modprobe nfs
+
+## check
+lsmod | grep nfs
+
+# Mount
+# <IP ADDR>は実際のipアドレスに置き換えて下さい
+# tailscaleのdomainname/addressで問題ありません
+# マウントポイントも自由です(/mntじゃなくていい)
+sudo mount -t nfs <IP ADDR>:/data /mnt
+
+```
+
+
