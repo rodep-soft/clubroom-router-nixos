@@ -116,49 +116,10 @@
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
 
-  # Enable the X11 windowing system.
-  # I only use Wayland
+  # Headless Server Settings (No GUI / No Sound)
   services.xserver.enable = false;
-
-  # Gnome settings
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-  services.gnome.core-apps.enable = true;
-  services.gnome.core-developer-tools.enable = false;
-  services.gnome.games.enable = false;
-  environment.gnome.excludePackages = with pkgs; [ gnome-tour gnome-user-docs ];
-
-  
-
-  # Configure keymap in X11
-  services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
-
-  # Enable CUPS to print documents.
-  # I won't use any printers
   services.printing.enable = false;
-
-  # Enable sound.
-  # services.pulseaudio.enable = true;
-  # OR
-
-  # I only use pipewire
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
-  };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  services.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  #   packages = with pkgs; [
-  #     tree
-  #   ];
-  # };
+  services.pipewire.enable = false;
 
   # User configuration
   users.users.yano = {
@@ -171,9 +132,6 @@
     home = "/home/yano";
     shell = pkgs.bash;
   };
-
-  # use firefox
-  programs.firefox.enable = true;
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
