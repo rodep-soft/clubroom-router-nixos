@@ -5,3 +5,6 @@
 `/etc/nixos/*`と一致しています.
 
 今エアコンの上に置いてあるpcです.
+
+ルータ設定は最適化しており、[wifi_as_wan](git@github.com:lazytatzv/wifi_as_wan_with_nixos.git)を流用しています.
+
