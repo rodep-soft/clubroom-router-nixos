@@ -31,7 +31,11 @@ lsmod | grep nfs
 # <IP ADDR>は実際のipアドレスに置き換えて下さい
 # tailscaleのdomainname/addressで問題ありません
 # マウントポイントも自由です(/mntじゃなくていい)
-sudo mount -t nfs <IP ADDR>:/data /mnt
+sudo mount -t nfs <IP_ADDR>:/data /mnt
+
+# mount永続化
+# /etc/fstabに記述
+<IP_ADDR>:/data  /mnt/nfs  nfs  _netdev,nofail,x-systemd.automount  0  0
 
 ```
 
