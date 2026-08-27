@@ -6,4 +6,4 @@
 
 今エアコンの上に置いてあるpcです.
 
-[wifi_as_wan](git@github.com:lazytatzv/wifi_as_wan_with_nixos.git)
+(wifi_as_wan)[git@github.com:lazytatzv/wifi_as_wan_with_nixos.git]
