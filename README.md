@@ -45,6 +45,10 @@ sudo mount -t nfs <IP_ADDR>:/data /mnt
 
 ```
 
+## ブラウザからDriveにアクセス(/data)
+
+[filebrowser](http://router:8080/settings/profile)
+
 ## 広告ブロック (AdGuard Home)
 
 LAN内のDNS問い合わせで広告・トラッカーを自動ブロックする `AdGuard Home` を稼働させています。
