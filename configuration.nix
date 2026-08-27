@@ -69,6 +69,17 @@
   };
   # ==========================================
 
+  # ==========================================
+  # FileBrowser (Web File Manager for /data)
+  # ==========================================
+  services.filebrowser = {
+    enable = true;
+    listenAddress = "0.0.0.0";
+    port = 8080;
+    root = "/data";
+  };
+  # ==========================================
+
   # vpn
   services.tailscale = {
     enable = true;
@@ -185,7 +196,7 @@
   # my firewall settings
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 2049 4000 4001 4002 8189 8000 8001 8889 8888 8554 3000 ];
+    allowedTCPPorts = [ 22 2049 4000 4001 4002 8189 8000 8001 8889 8888 8554 3000 8080 ];
     allowedUDPPorts = [ 53 67 68 2049 4000 4001 4002 8889 8888 8554 ];
     checkReversePath = false;
     allowPing = true;
