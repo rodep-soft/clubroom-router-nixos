@@ -191,6 +191,7 @@
     gemini-cli
     nmap
     tcpdump
+    dnsutils
     zip
     unzip
     python3
