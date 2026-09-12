@@ -80,6 +80,7 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
 
 * 🌐 **NAS / ファイルマネージャー**: [http://nas.lan](http://nas.lan) (または [http://drive.lan](http://drive.lan) / [http://router.lan](http://router.lan))
 * 🛡️ **広告ブロック管理 (AdGuard Home)**: [http://adguard.lan](http://adguard.lan) (または [http://dns.lan](http://dns.lan))
+* 📊 **ハードウェア & ネットワーク監視 (Grafana)**: [http://grafana.lan](http://grafana.lan) (または [http://monitor.lan](http://monitor.lan) / [http://status.lan](http://status.lan))
 
 ---
 
@@ -99,6 +100,7 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
     ├── performance.nix        # 高性能カーネル(Zen)、BBR+CAKE、tmpfs、sysctlチューニング
     ├── router.nix             # WiFi-as-WAN、AdGuard Home、Firewall設定
     ├── proxy.nix              # Caddy リバースプロキシ (*.lan ローカルドメイン)
+    ├── monitoring.nix         # Prometheus + Node Exporter + Grafana 監視基盤
     ├── services.nix           # Tailscale、NFS、FileBrowser、Docker、SSH
     ├── runner.nix             # GitHub Actions Self-Hosted Runner (rodep-soft)
     ├── system.nix             # ユーザー(yano)、パッケージ、自動GC、最適化

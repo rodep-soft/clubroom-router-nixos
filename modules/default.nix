@@ -6,6 +6,7 @@
     ./performance.nix
     ./router.nix
     ./proxy.nix
+    ./monitoring.nix
     ./services.nix
     ./runner.nix
     ./system.nix
