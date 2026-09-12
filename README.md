@@ -73,3 +73,41 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
 
 
 
+
+---
+
+## Nix Flakes によるデプロイと運用
+
+本リポジトリは **Nix Flakes** および **モジュール分割** に対応しています。
+
+### ディレクトリ構成
+```
+.
+├── flake.nix                  # Flake定義エントリーポイント
+├── configuration.nix          # ホスト設定 (modules + hardware-configuration をインポート)
+├── hardware-configuration.nix # ハードウェア自動生成設定
+├── Makefile                   # 管理用ショートカットコマンド
+└── modules/                   # 機能ごとの分割モジュール
+    ├── default.nix            # モジュール一括インポート
+    ├── performance.nix        # 高性能カーネル(Zen)、BBR+CAKE、tmpfs、sysctlチューニング
+    ├── router.nix             # WiFi-as-WAN、AdGuard Home、Firewall設定
+    ├── services.nix           # Tailscale、NFS、FileBrowser、Docker、SSH
+    ├── runner.nix             # GitHub Actions Self-Hosted Runner (rodep-soft)
+    ├── system.nix             # ユーザー(yano)、パッケージ、自動GC、最適化
+    └── wifi-as-wan.nix        # WiFi as WAN モジュール定義
+```
+
+### 設定の反映 (Nix Flakes)
+リポジトリ内で以下を実行するだけで適用できます：
+
+```bash
+# 設定をビルドして即時適用
+make switch
+# (または sudo nixos-rebuild switch --flake .#nixos)
+
+# 再起動時にのみ反映させる場合
+make boot
+
+# Flake の依存関係（nixpkgs等）のアップデート
+make update
+```
