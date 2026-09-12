@@ -58,6 +58,25 @@
     "docker-28.5.2"
   ];
 
+  # Distcc Distributed C/C++ Compiler Daemon
+  # Enables team members on LAN or Tailscale to offload GCC/G++ compilation to 16 threads
+  services.distccd = {
+    enable = true;
+    allowedClients = [
+      "127.0.0.1"
+      "192.168.50.0/24"
+      "100.64.0.0/10"
+    ];
+    stats = {
+      enable = true;
+      port = 3633;
+    };
+    zeroconf = true;
+  };
+
   # OpenSSH Server
   services.openssh.enable = true;
+
+  # Distcc Ports (3632 daemon, 3633 web stats)
+  networking.firewall.allowedTCPPorts = [ 3632 3633 ];
 }

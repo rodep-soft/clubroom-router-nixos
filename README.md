@@ -81,6 +81,21 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
 * 🌐 **NAS / ファイルマネージャー**: [http://nas.lan](http://nas.lan) (または [http://drive.lan](http://drive.lan) / [http://router.lan](http://router.lan))
 * 🛡️ **広告ブロック管理 (AdGuard Home)**: [http://adguard.lan](http://adguard.lan) (または [http://dns.lan](http://dns.lan))
 * 📊 **ハードウェア & ネットワーク監視 (Grafana)**: [http://grafana.lan](http://grafana.lan) (または [http://monitor.lan](http://monitor.lan) / [http://status.lan](http://status.lan))
+* ⚡ **分散コンパイル監視 (distcc Web)**: [http://distcc.lan](http://distcc.lan)
+
+### 分散コンパイル (distcc) の利用方法
+部員のノート PC で以下を設定するだけで、通常の `colcon build` や `make` をルーターの 16 スレッドで並列処理できます：
+
+```bash
+# クライアント側（部員の PC）
+export DISTCC_HOSTS="192.168.50.1/16"  # Tailscale経由ならTailscale IP
+export CC="distcc gcc"
+export CXX="distcc g++"
+
+# あとは普通にビルド
+colcon build --parallel-workers 16
+# または make -j16
+```
 
 ---
 
