@@ -41,6 +41,8 @@
 
   # Disable NetworkManager to prevent interference with router daemons
   networking.networkmanager.enable = false;
+  networking.useNetworkd = true;
+  networking.useDHCP = false;
 
   # Automatic DNS resolution for all *.lan domains to router IP (192.168.50.1)
   services.dnsmasq.settings.address = [
