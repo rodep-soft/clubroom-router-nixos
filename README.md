@@ -74,6 +74,13 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
 
 
 
+## 部内 Web サービス一覧 (リバースプロキシ)
+
+部室 LAN に接続しているデバイスのブラウザから、ポート番号不要でアクセス可能です：
+
+* 🌐 **NAS / ファイルマネージャー**: [http://nas.lan](http://nas.lan) (または [http://drive.lan](http://drive.lan) / [http://router.lan](http://router.lan))
+* 🛡️ **広告ブロック管理 (AdGuard Home)**: [http://adguard.lan](http://adguard.lan) (または [http://dns.lan](http://dns.lan))
+
 ---
 
 ## Nix Flakes によるデプロイと運用
@@ -91,6 +98,7 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
     ├── default.nix            # モジュール一括インポート
     ├── performance.nix        # 高性能カーネル(Zen)、BBR+CAKE、tmpfs、sysctlチューニング
     ├── router.nix             # WiFi-as-WAN、AdGuard Home、Firewall設定
+    ├── proxy.nix              # Caddy リバースプロキシ (*.lan ローカルドメイン)
     ├── services.nix           # Tailscale、NFS、FileBrowser、Docker、SSH
     ├── runner.nix             # GitHub Actions Self-Hosted Runner (rodep-soft)
     ├── system.nix             # ユーザー(yano)、パッケージ、自動GC、最適化

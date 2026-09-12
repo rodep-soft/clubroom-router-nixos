@@ -42,10 +42,16 @@
   # Disable NetworkManager to prevent interference with router daemons
   networking.networkmanager.enable = false;
 
+  # Automatic DNS resolution for all *.lan domains to router IP (192.168.50.1)
+  services.dnsmasq.settings.address = [
+    "/lan/192.168.50.1"
+    "/router/192.168.50.1"
+  ];
+
   # Firewall Rules
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 2049 4000 4001 4002 8189 8000 8001 8889 8888 8554 3000 8080 ];
+    allowedTCPPorts = [ 22 80 443 2049 4000 4001 4002 8189 8000 8001 8889 8888 8554 3000 8080 ];
     allowedUDPPorts = [ 53 67 68 2049 4000 4001 4002 8889 8888 8554 ];
     checkReversePath = false;
     allowPing = true;
