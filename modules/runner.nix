@@ -16,6 +16,11 @@
       zstd
       coreutils
     ];
+    extraEnvironment = {
+      CCACHE_DIR = "/home/yano/.cache/ccache";
+      CCACHE_MAXSIZE = "50G";
+      DOCKER_BUILDKIT = "1";
+    };
     serviceOverrides = {
       ProtectProc = "default";
       ProcSubset = "all";

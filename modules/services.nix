@@ -29,13 +29,25 @@
     };
   };
 
-  # Docker Container Engine
+  # Docker Container Engine with BuildKit & Cache Optimization
   virtualisation.docker = {
     enable = true;
     package = pkgs.docker_29;
     autoPrune = {
       enable = true;
       dates = "weekly";
+      flags = [ "--all" "--filter" "until=168h" ];
+    };
+    daemon.settings = {
+      features = {
+        buildkit = true;
+      };
+      # Optimize Docker log size to prevent disk bloat
+      "log-driver" = "json-file";
+      "log-opts" = {
+        "max-size" = "50m";
+        "max-file" = "3";
+      };
     };
   };
 

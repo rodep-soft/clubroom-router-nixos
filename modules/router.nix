@@ -14,7 +14,7 @@
   };
 
   # ==========================================
-  # AdGuard Home (DNS Ad Blocking & Protection)
+  # AdGuard Home (DNS Ad Blocking & High-Speed DNS Cache)
   # ==========================================
   services.adguardhome = {
     enable = true;
@@ -27,6 +27,10 @@
           "https://dns.quad9.net/dns-query"
           "https://cloudflare-dns.com/dns-query"
         ];
+        # High-Speed DNS Cache Settings
+        cache_size = 536870912;  # 512 MB RAM cache for instant DNS resolution
+        cache_ttl_min = 3600;    # Cache entries for at least 1 hour
+        cache_optimistic = true; # Return cached response immediately and refresh in background
       };
       filtering = {
         protection_enabled = true;
