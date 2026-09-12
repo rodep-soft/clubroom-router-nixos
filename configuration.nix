@@ -105,6 +105,12 @@
     package = pkgs.docker_29;
   };
 
+  nixpkgs.config.permittedInsecurePackages = [
+        "docker-28.5.2"
+      ];
+  
+
+
 
   # networking.hostName = "nixos"; # Define your hostname.
 
@@ -138,7 +144,7 @@
   users.users.yano = {
     isNormalUser = true;
     description = "Yano";
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "docker" ];
     packages = with pkgs; [
       tree
     ];
@@ -154,8 +160,14 @@
     fish
     nano
     neovim
+    gawk
+    findutils
+    gnused
+    diffutils
+    perl
 
     htop
+    pkg-config
 
     git
     usbutils
@@ -175,6 +187,21 @@
     #docker-compose
     
   ];
+
+  services.github-runners.rodep-builder = {
+        enable = true;
+        url = "https://github.com/rodep-soft"; # ← Organization URL         
+        tokenFile = "/var/lib/github-runner/token";
+        user = "yano";
+        workDir = "/var/lib/github-runner/work";
+        replace = true;
+        extraPackages = with pkgs; [ docker_29 git ];
+        serviceOverrides = {
+          ProtectProc = "default";
+          ProcSubset = "all";
+          ProtectControlGroups = false;
+        };
+      };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
