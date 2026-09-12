@@ -18,6 +18,51 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
+  # ==========================================
+  # High-Performance Kernel & Sysctl Tuning
+  # ==========================================
+  boot.kernelParams = [
+    "cpufreq.default_governor=performance"
+    "intel_pstate=active"
+    "mitigations=off"
+    "tsc=reliable"
+    "clocksource=tsc"
+    "nowatchdog"
+  ];
+
+  boot.kernel.sysctl = {
+    # Network: BBR + CAKE for low-latency & high-throughput router
+    "net.core.default_qdisc" = "cake";
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.netdev_max_backlog" = 16384;
+    "net.core.somaxconn" = 8192;
+    "net.core.rmem_max" = 16777216;
+    "net.core.wmem_max" = 16777216;
+    "net.ipv4.tcp_rmem" = "4096 87380 16777216";
+    "net.ipv4.tcp_wmem" = "4096 65536 16777216";
+    "net.ipv4.tcp_fastopen" = 3;
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
+    "net.ipv4.tcp_tw_reuse" = 1;
+
+    # Memory & Disk I/O Performance
+    "vm.swappiness" = 10;
+    "vm.vfs_cache_pressure" = 50;
+    "vm.dirty_background_ratio" = 5;
+    "vm.dirty_ratio" = 10;
+    "fs.file-max" = 2097152;
+    "fs.inotify.max_user_watches" = 524288;
+    "fs.inotify.max_user_instances" = 8192;
+  };
+
+  # RAM disk for /tmp to speed up builds and reduce SSD wear
+  boot.tmp = {
+    useTmpfs = true;
+    tmpfsSize = "16G";
+  };
+
+  # Mount root with noatime for reduced disk writes
+  fileSystems."/".options = [ "noatime" "nodiratime" ];
+
   powerManagement.cpuFreqGovernor = "performance";
 
   nix.settings.auto-optimise-store = true; 
@@ -103,14 +148,15 @@
   virtualisation.docker = {
     enable = true;
     package = pkgs.docker_29;
+    autoPrune = {
+      enable = true;
+      dates = "weekly";
+    };
   };
 
   nixpkgs.config.permittedInsecurePackages = [
-        "docker-28.5.2"
-      ];
-  
-
-
+    "docker-28.5.2"
+  ];
 
   # networking.hostName = "nixos"; # Define your hostname.
 
@@ -121,19 +167,6 @@
   # Set your time zone.
   # I live in Japan
   time.timeZone = "Asia/Tokyo";
-
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
 
   # Headless Server Settings (No GUI / No Sound)
   services.xserver.enable = false;
@@ -153,7 +186,6 @@
   };
 
   # List packages installed in system profile.
-  # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
     vim 
     wget
@@ -165,10 +197,8 @@
     gnused
     diffutils
     perl
-
     htop
     pkg-config
-
     git
     usbutils
     gemini-cli
@@ -184,43 +214,28 @@
     ffmpeg
     v4l-utils
     docker_29
-    #docker-compose
-    
+    ccache
+    zstd
   ];
 
+  # GitHub Actions Self-Hosted Runner (rodep-soft)
   services.github-runners.rodep-builder = {
-        enable = true;
-        url = "https://github.com/rodep-soft"; # ← Organization URL         
-        tokenFile = "/var/lib/github-runner/token";
-        user = "yano";
-        workDir = "/var/lib/github-runner/work";
-        replace = true;
-        extraPackages = with pkgs; [ docker_29 git ];
-        serviceOverrides = {
-          ProtectProc = "default";
-          ProcSubset = "all";
-          ProtectControlGroups = false;
-        };
-      };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
+    enable = true;
+    url = "https://github.com/rodep-soft";
+    tokenFile = "/var/lib/github-runner/token";
+    user = "yano";
+    workDir = "/var/lib/github-runner/work";
+    replace = true;
+    extraPackages = with pkgs; [ docker_29 git ccache zstd coreutils ];
+    serviceOverrides = {
+      ProtectProc = "default";
+      ProcSubset = "all";
+      ProtectControlGroups = false;
+    };
+  };
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # my firewall settings
   networking.firewall = {
@@ -231,29 +246,5 @@
     allowPing = true;
   };
 
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.11"; # Did you read the comment?
-
+  system.stateVersion = "25.11";
 }
