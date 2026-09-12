@@ -25,6 +25,11 @@
     # Retain build derivations for faster incremental builds
     keep-outputs = true;
     keep-derivations = true;
+
+    # Nix Remote Builder Authorization
+    # Allows remote team members (MacBook / Linux) to offload builds to this machine
+    trusted-users = [ "root" "yano" "@wheel" ];
+    extra-platforms = [ "x86_64-linux" "i686-linux" ];
   };
 
   # Automatic Garbage Collection (Keep last 7 days of build derivations)
