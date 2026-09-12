@@ -83,19 +83,74 @@ NFSの共有フォルダ `/data` をブラウザから直接閲覧・アップ�
 * 📊 **ハードウェア & ネットワーク監視 (Grafana)**: [http://grafana.lan](http://grafana.lan) (または [http://monitor.lan](http://monitor.lan) / [http://status.lan](http://status.lan))
 * ⚡ **分散コンパイル監視 (distcc Web)**: [http://distcc.lan](http://distcc.lan)
 
-### 分散コンパイル (distcc) の利用方法
-部員のノート PC で以下を設定するだけで、通常の `colcon build` や `make` をルーターの 16 スレッドで並列処理できます：
+## ⚡ 分散コンパイル & リモートビルダーの利用ガイド
 
+部員のノート PC（MacBook や Linux）のビルド処理を、部室ルーターの 8C/16T（i7-11800H）に肩代わりさせるための手順です。
+
+---
+
+### 1. `distcc` による通常ビルドの分散化（ROS 2 / C++ / CMake / Make）
+> `flake.nix` の作成やプロジェクトファイルの変更は不要です。
+
+#### ① クライアント PC に `distcc` をインストール
+* **Ubuntu / Debian**: `sudo apt install distcc`
+* **Arch Linux**: `sudo pacman -S distcc`
+* **macOS**: `brew install distcc`
+
+#### ② ターミナルで環境変数を設定（`~/.bashrc` や `~/.zshrc` に追記推奨）
 ```bash
-# クライアント側（部員の PC）
-export DISTCC_HOSTS="192.168.50.1/16"  # Tailscale経由ならTailscale IP
+# 部室 LAN 接続時（16スレッド並列指定）
+export DISTCC_HOSTS="192.168.50.1/16"
+
+# ※ Tailscale 経由で自宅からビルドする場合は Tailscale IP または nixos を指定:
+# export DISTCC_HOSTS="<Tailscale-IP>/16"
+
+# コンパイラを distcc 経由に切り替え
 export CC="distcc gcc"
 export CXX="distcc g++"
-
-# あとは普通にビルド
-colcon build --parallel-workers 16
-# または make -j16
 ```
+
+#### ③ いつも通りビルドを実行
+```bash
+# ROS 2 の場合 (16並列で爆速ビルド)
+colcon build --parallel-workers 16
+
+# 通常の CMake / Make の場合
+make -j16
+# または cmake --build build -j16
+```
+* 📊 **リアルタイム分散状況の確認**: ブラウザで [http://distcc.lan](http://distcc.lan)（または `http://<Tailscale-IP>:3633`）を開くと、リアルタイムで各コンパイルジョブの分散状況が見えます。
+
+---
+
+### 2. Nix リモートビルダー（Nix / Flakes / macOS Apple Silicon 対応）
+> MacBook (M1/M2/M3) からでも Linux 用バイナリ・ROS 2・Docker コンテナをルーター上でビルド可能。
+
+#### ① 部員の SSH 公開鍵をルーターに登録
+ルーターの `/home/yano/.ssh/authorized_keys` に部員の公開鍵を追記。
+
+#### ② 部員の PC の `~/.config/nix/nix.conf` に設定を追加
+```conf
+builders = ssh://yano@192.168.50.1 x86_64-linux - 16 1 kvm,benchmark,big-parallel
+```
+*(Tailscale 経由の場合は `ssh://yano@nixos` または `ssh://yano@<Tailscale-IP>`)*
+
+#### ③ ビルドを実行
+```bash
+nix build
+# または
+nix develop
+```
+自動的にルーターへソースが送られ、ルーターの RAM ディスク上で並列ビルドされた完成品だけが手元に戻ってきます。
+
+---
+
+### 3. VS Code Remote SSH（GUI でコード編集 + ルーター側で実行）
+1. VS Code 拡張機能「**Remote - SSH**」をインストール。
+2. `ssh yano@192.168.50.1`（または Tailscale の `ssh yano@nixos`）に接続。
+3. ルーター内のプロジェクトフォルダを開くことで、快適にコードを書きつつ、16スレッドの爆速ビルドと実行を行えます。
+
+---
 
 ---
 
