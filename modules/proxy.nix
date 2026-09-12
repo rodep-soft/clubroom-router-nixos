@@ -43,6 +43,15 @@
           reverse_proxy 127.0.0.1:8080
         '';
       };
+
+      # Tailscale / Hostname / Default HTTP Catch-All
+      # Accessing via Tailscale IP (http://100.x.y.z) or hostname (http://nixos)
+      # directly opens FileBrowser NAS on standard port 80
+      ":80" = {
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:8080
+        '';
+      };
     };
   };
 

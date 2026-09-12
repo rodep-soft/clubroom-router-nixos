@@ -1,10 +1,13 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Tailscale VPN
+  # Tailscale VPN (with Subnet Router for LAN 192.168.50.0/24)
   services.tailscale = {
     enable = true;
-    extraUpFlags = [ "--accept-dns=false" ];
+    extraUpFlags = [
+      "--accept-dns=false"
+      "--advertise-routes=192.168.50.0/24"
+    ];
   };
 
   # NFS NAS Server
