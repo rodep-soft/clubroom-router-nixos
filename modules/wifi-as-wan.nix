@@ -144,6 +144,20 @@ in {
       nameserver 127.0.0.1
     '');
 
+    # External interface (WAN) - DHCP from upstream WiFi (e.g. school network)
+    # iwd handles WiFi association; networkd handles IP config after association.
+    systemd.network.networks."10-wan" = {
+      matchConfig.Name = cfg.externalInterface;
+      networkConfig = {
+        DHCP = "yes";
+        IPv6AcceptRA = mkDefault "yes";
+      };
+      dhcpV4Config = {
+        RouteMetric = 100;
+        UseDNS = false; # We use our own dnsmasq/AdGuard for DNS
+      };
+    };
+
     # Internal interface static IP configuration
     systemd.network.networks."10-lan" = {
       matchConfig.Name = cfg.internalInterface;
