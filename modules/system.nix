@@ -78,6 +78,7 @@
     diffutils
     perl
     htop
+    iw
     pkg-config
     git
     usbutils
