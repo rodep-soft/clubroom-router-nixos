@@ -124,6 +124,10 @@ in {
     # iwd for upstream WiFi management
     networking.wireless.iwd.enable = mkDefault true;
     networking.wireless.iwd.settings = mkDefault {
+      General = {
+        AddressRandomization = "network";
+	AddressRandomizationRange = "full";
+      };
       Network = {
         EnableIPv6 = true;
       };
@@ -150,6 +154,8 @@ in {
       matchConfig.Name = cfg.externalInterface;
       networkConfig = {
         DHCP = "yes";
+	#Address = "131.206.224.102/20";
+	#Gateway = "131.206.224.1";
         IPv6AcceptRA = mkDefault "yes";
       };
       dhcpV4Config = {
