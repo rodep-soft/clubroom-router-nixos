@@ -14,6 +14,18 @@
 
 大学のwifiに接続する時は、[iwd](https://wiki.archlinux.org/title/Iwd)の`3.2.2`を参考にするか、[wifi_as_wan](https://github.com/lazytatzv/wifi_as_wan_with_nixos)の設定ファイルを参考にすると良いでしょう.
 
+### 定期的なWAN IP・MACアドレスのローテーション
+
+大学のDHCPから接続ごとに新しいIPを取得するため、接続プロファイル（`/var/lib/iwd/<SSID>.8021x` または `.psk`）の `[Settings]` に以下を記述してください：
+
+```ini
+[Settings]
+AlwaysRandomizeAddress=true
+```
+
+- **自動ローテーション**: `systemd.timers.rotate-wan-ip` により毎日午前4時に自動でiwdが再起動され、MACアドレスとIPが更新されます（`modules/router.nix` の `rotateWanIp` 設定で変更可能）。
+- **手動更新**: コマンド `renew-wan-ip` を実行することで、いつでも即座に新しいMACとIPアドレスを取得できます。
+
 ## NAS設定
 
 `nfs`サーバを建てているのでLinuxユーザは簡単に利用することができます.

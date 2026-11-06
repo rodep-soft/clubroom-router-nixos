@@ -11,6 +11,10 @@
     internalIp = "192.168.50.1";
     upstreamDns = [ "127.0.0.1#5335" ];
     autoDisableConflicts = true;
+    rotateWanIp = {
+      enable = true;
+      calendar = "*-*-* 04:00:00"; # Rotate WAN IP daily at 04:00 AM
+    };
   };
 
   # ==========================================

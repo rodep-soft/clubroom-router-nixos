@@ -53,6 +53,19 @@ in {
         error (assertion) if conflicts are detected, requiring manual intervention.
       '';
     };
+
+    rotateWanIp = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Periodically reconnect WiFi to rotate MAC address and obtain a fresh DHCP lease.";
+      };
+      calendar = mkOption {
+        type = types.str;
+        default = "*-*-* 04:00:00";
+        description = "systemd OnCalendar specification for periodic WAN IP rotation (e.g. daily at 04:00).";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -161,6 +174,8 @@ in {
       dhcpV4Config = {
         RouteMetric = 100;
         UseDNS = false; # We use our own dnsmasq/AdGuard for DNS
+        ClientIdentifier = "mac";
+        Anonymize = true; # RFC 7844: MAC client identifier and anonymized DHCP requests
       };
     };
 
@@ -216,5 +231,39 @@ in {
     # NixOS automatically merges these lists.
     networking.firewall.allowedUDPPorts = [ 53 67 68 ];
     networking.firewall.allowedTCPPorts = [ 53 ];
+
+    # Periodic WAN IP / MAC rotation service and timer
+    systemd.services.rotate-wan-ip = mkIf cfg.rotateWanIp.enable {
+      description = "Rotate WAN IP and randomized MAC address by restarting iwd";
+      after = [ "network.target" "iwd.service" ];
+      wants = [ "network.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.systemd}/bin/systemctl restart iwd.service";
+      };
+    };
+
+    systemd.timers.rotate-wan-ip = mkIf cfg.rotateWanIp.enable {
+      description = "Timer for periodic WAN IP rotation";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = cfg.rotateWanIp.calendar;
+        Persistent = true;
+      };
+    };
+
+    # Helper script to renew WAN IP on demand
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "renew-wan-ip" ''
+        echo "=== Rotating WAN IP & MAC Address ==="
+        echo "Restarting iwd.service..."
+        sudo ${pkgs.systemd}/bin/systemctl restart iwd.service
+        echo "Waiting for WiFi reconnection and DHCP lease..."
+        sleep 5
+        echo "Current IP status on ${cfg.externalInterface}:"
+        ${pkgs.iproute2}/bin/ip -brief addr show ${cfg.externalInterface} || true
+        echo "Done!"
+      '')
+    ];
   };
 }
